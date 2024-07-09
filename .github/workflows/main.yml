@@ -16,7 +16,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: 'rekhugopal/testrepo:latest'
+          tags: 'alekyagandem/testrepos:latest'
       - name: SSH to EC2 instance and pull Docker image
         uses: appleboy/ssh-action@master
         with:
