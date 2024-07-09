@@ -15,5 +15,31 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
+          context: DockerFileFolder/
           push: true
-          tags: alekyagandem/testrepos:latest
+          tags: 'rekhugopal/testrepo:latest'
+      - name: SSH to EC2 instance and pull Docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: '${{ secrets.EC2_HOST }}'
+          username: '${{ secrets.EC2_USERNAME }}'
+          key: '${{ secrets.SSH_PRIVATE_KEY }}'
+          port: '${{ secrets.EC2_SSH_PORT }}'
+          script: |
+            docker pull alekyagandem/testrepos:latest
+      - name: SSH to EC2 instance and run Docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: '${{ secrets.EC2_HOST }}'
+          username: '${{ secrets.EC2_USERNAME }}'
+          key: '${{ secrets.SSH_PRIVATE_KEY }}'
+          port: '${{ secrets.EC2_SSH_PORT }}'
+          script: >
+            docker stop my-container || true  # Stop the existing container (if
+            any)
+
+            docker rm my-container || true    # Remove the existing container
+            (if any)
+
+            docker run -d -p 80:80 --name my-container
+            alekyagandem/testrepos:latest
